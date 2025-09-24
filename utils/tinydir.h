@@ -28,9 +28,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <errno.h>
 #include <stdlib.h>
 #include <string.h>
-#include "WAllocator.h"
 #include "StringFunctions.h"
-#include "Folder.h"
 
 #ifdef _MSC_VER
 #define WIN32_LEAN_AND_MEAN
@@ -137,8 +135,6 @@ int tinydir_open(tinydir_dir *dir, const char *path)
 		return -1;
 	}
 
-	path = Folder_GetFullPath(path);
-
 	if (strlen(path) + _TINYDIR_PATH_EXTRA >= _TINYDIR_PATH_MAX)
 	{
 		errno = ENAMETOOLONG;
@@ -211,7 +207,7 @@ int tinydir_open_sorted(tinydir_dir *dir, const char *path)
 	}
 
 	dir->n_files = 0;
-	dir->_files = (tinydir_file *)WAllocator_Alloc(sizeof *dir->_files * n_files);
+	dir->_files = (tinydir_file *)malloc(sizeof *dir->_files * n_files);
 	if (dir->_files == NULL)
 	{
 		errno = ENOMEM;
@@ -263,7 +259,7 @@ void tinydir_close(tinydir_dir *dir)
 	dir->n_files = 0;
 	if (dir->_files != NULL)
 	{
-		WAllocator_Free(dir->_files);
+		free(dir->_files);
 	}
 	dir->_files = NULL;
 #ifdef _MSC_VER
